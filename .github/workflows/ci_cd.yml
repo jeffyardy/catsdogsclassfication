@@ -1,4 +1,4 @@
-name: CI-CD Pipeline
+name: CI-CD Deploy To Local Docker
 
 on:
   push:
@@ -6,28 +6,24 @@ on:
 
 jobs:
 
-# =========================
-# CI JOB
-# =========================
+# ---------------------------
+# CI JOB (cloud runner)
+# ---------------------------
   build-test-push:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
+    - uses: actions/setup-python@v5
       with:
         python-version: "3.10"
 
-    - name: Install deps
-      run: |
+    - run: |
         pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
-      run: pytest
+    - run: pytest
 
     - name: Build image
       run: docker build -t ${{ secrets.DOCKER_USERNAME }}/catsdogs-mlops:latest .
@@ -39,27 +35,33 @@ jobs:
       run: docker push ${{ secrets.DOCKER_USERNAME }}/catsdogs-mlops:latest
 
 
-# =========================
-# CD JOB
-# =========================
-  deploy:
+# ---------------------------
+# CD JOB (runs on YOUR LAPTOP)
+# ---------------------------
+  deploy-local:
     needs: build-test-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
 
-    - name: Deploy via SSH + Docker Compose
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        script: |
-          cd catsdogs-deploy
-          docker compose pull
-          docker compose up -d
+    - name: Pull latest image
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/catsdogs-mlops:latest
+
+    - name: Stop old container
+      run: docker stop catsdogs-api || true
+
+    - name: Remove old container
+      run: docker rm catsdogs-api || true
+
+    - name: Run new container
+      run: |
+        docker run -d \
+          --name catsdogs-api \
+          -p 8000:8000 \
+          ${{ secrets.DOCKER_USERNAME }}/catsdogs-mlops:latest
+
+    - name: Wait for startup
+      run: sleep 15
 
     - name: Smoke test
-      run: |
-        sleep 20
-        curl -f http://${{ secrets.DEPLOY_HOST }}:8000/health
+      run: curl -f http://localhost:8000/health
