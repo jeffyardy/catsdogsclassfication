@@ -1,0 +1,143 @@
+# =========================
+
+# Python cache & compiled
+
+# =========================
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+
+venv/
+.env/
+.envrc
+.venv/
+env/
+ENV/
+
+# =========================
+
+# Jupyter Notebook
+
+# =========================
+
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# =========================
+
+# OS files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# Logs & temp files
+
+# =========================
+
+*.log
+logs/
+tmp/
+temp/
+
+# =========================
+
+# ML datasets (VERY IMPORTANT)
+
+# =========================
+
+PetImages/
+datasets/
+*.zip
+*.tar
+*.gz
+
+# =========================
+
+# Model artifacts
+
+# =========================
+
+*.h5
+*.pt
+*.pth
+*.pkl
+models/
+checkpoints/
+
+# =========================
+
+# MLflow tracking files
+
+# =========================
+
+mlruns/
+mlartifacts/
+
+# =========================
+
+# Test / coverage outputs
+
+# =========================
+
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# =========================
+
+# IDE settings
+
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+
+# Docker
+
+# =========================
+
+*.dockerignore
+
+# Ignore local compose overrides if any
+
+docker-compose.override.yml
+
+# =========================
+
+# Build / packaging
+
+# =========================
+
+build/
+dist/
+*.egg-info/
+
+# =========================
+
+# Secrets & configs
+
+# =========================
+
+.env.local
+.env.production
+*.key
+*.pem
+
+# =========================
+
+# Misc
+
+# =========================
+
+*.swp
+*.bak
